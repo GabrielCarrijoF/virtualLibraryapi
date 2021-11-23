@@ -4,6 +4,7 @@ import com.gabriel.virtualLibraryapi.api.exeption.BusinessExecption;
 import com.gabriel.virtualLibraryapi.model.entity.Book;
 import com.gabriel.virtualLibraryapi.model.repository.BookRepository;
 import com.gabriel.virtualLibraryapi.service.BookService;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 @Service
 public class BookServiceImp implements BookService {
@@ -21,5 +22,10 @@ public class BookServiceImp implements BookService {
       throw new BusinessExecption("Isbn já cadastrada");
     }
     return repository.save(book);
+  }
+
+  @Override
+  public Optional<Book> getById(final Long id) {
+    return Optional.empty();
   }
 }

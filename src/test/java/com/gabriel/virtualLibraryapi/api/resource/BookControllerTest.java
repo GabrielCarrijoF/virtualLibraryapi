@@ -10,6 +10,7 @@ import com.gabriel.virtualLibraryapi.api.dto.BookDTO;
 import com.gabriel.virtualLibraryapi.api.exeption.BusinessExecption;
 import com.gabriel.virtualLibraryapi.model.entity.Book;
 import com.gabriel.virtualLibraryapi.service.BookService;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -70,6 +71,7 @@ public class BookControllerTest {
         .andExpect(jsonPath("title").value(bookDTO.getTitle()))
         .andExpect(jsonPath("author").value(bookDTO.getAuthor()))
         .andExpect(jsonPath("isbn").value(bookDTO.getIsbn()));
+
   }
 
   @Test
@@ -113,5 +115,49 @@ public class BookControllerTest {
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("erros", hasSize(1)))
         .andExpect(jsonPath("erros[0]").value(messageErro));
+  }
+
+  @Test
+  @DisplayName(" Must get information from a book")
+  public void getBookDetailsTest() throws Exception {
+    //cenario(given)
+    Long id = 11L;
+
+    Book book = Book.builder()
+        .id(id)
+        .title(createNewBook().getTitle())
+        .author(createNewBook().getAuthor())
+        .isbn(createNewBook().getIsbn()).build();
+
+    BDDMockito.given(service.getById(id)).willReturn(Optional.of(book));
+
+    //execução (when)
+    MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+        .get(BOOK_API.concat("/" + id))
+        .accept(MediaType.APPLICATION_JSON);
+
+    mvc
+        .perform(request)
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("id").value(id))
+        .andExpect(jsonPath("title").value(createNewBook().getTitle()))
+        .andExpect(jsonPath("author").value(createNewBook().getAuthor()))
+        .andExpect(jsonPath("isbn").value(createNewBook().getIsbn()));
+
+  }
+
+  @Test
+  @DisplayName("Should return a resource not found when the book looking for does not exist")
+   public void  bookNotFoundTest() throws Exception{
+
+    BDDMockito.given(service.getById(Mockito.anyLong())).willReturn(Optional.empty());
+
+    MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+        .get(BOOK_API.concat("/" + 1L))
+        .accept(MediaType.APPLICATION_JSON);
+
+    mvc
+        .perform(request)
+        .andExpect(status().isNotFound());
   }
 }
