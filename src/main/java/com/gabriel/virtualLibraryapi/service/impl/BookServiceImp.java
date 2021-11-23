@@ -1,5 +1,6 @@
 package com.gabriel.virtualLibraryapi.service.impl;
 
+import com.gabriel.virtualLibraryapi.api.exeption.BusinessExecption;
 import com.gabriel.virtualLibraryapi.model.entity.Book;
 import com.gabriel.virtualLibraryapi.model.repository.BookRepository;
 import com.gabriel.virtualLibraryapi.service.BookService;
@@ -16,6 +17,9 @@ public class BookServiceImp implements BookService {
 
   @Override
   public Book save(final Book book) {
+    if (repository.existsByIsbn(book.getIsbn())){
+      throw new BusinessExecption("Isbn já cadastrada");
+    }
     return repository.save(book);
   }
 }
