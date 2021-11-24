@@ -160,4 +160,29 @@ public class BookControllerTest {
         .perform(request)
         .andExpect(status().isNotFound());
   }
+  @Test
+  @DisplayName("Must delete a book")
+  public void deleteBookTeste() throws Exception{
+
+    BDDMockito.given(service.getById(Mockito.anyLong())).willReturn(Optional.of(Book.builder().id(11L).build()));
+
+    MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+        .delete(BOOK_API.concat("/" + 11L));
+
+    mvc.perform(request)
+        .andExpect(status().isNoContent());
+  }
+
+  @Test
+  @DisplayName("Must delete a book")
+  public void notFondBookTeste() throws Exception{
+
+    BDDMockito.given(service.getById(Mockito.anyLong())).willReturn(Optional.empty());
+
+    MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+        .delete(BOOK_API.concat("/" + 11L));
+
+    mvc.perform(request)
+        .andExpect(status().isNotFound());
+  }
 }
