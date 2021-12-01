@@ -6,6 +6,7 @@ import com.gabriel.virtualLibraryapi.api.exeption.BusinessExecption;
 import com.gabriel.virtualLibraryapi.model.entity.Book;
 import com.gabriel.virtualLibraryapi.model.repository.BookRepository;
 import com.gabriel.virtualLibraryapi.service.impl.BookServiceImp;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -71,5 +72,58 @@ public class BookServiceTest {
         .hasMessage("Isbn já cadastrada");
 
     Mockito.verify(repository, Mockito.never()).save(book);
+  }
+
+  @Test
+  @DisplayName("Deve obter livro por Id")
+  public void getById() {
+    Long id = 1L;
+
+    Book book = createValidBook();
+    book.setId(id);
+    Mockito.when(repository.findById(id)).thenReturn(Optional.of(book));
+
+    Optional<Book> foundBook = service.getById(id);
+
+    assertThat(foundBook.isPresent()).isTrue();
+    assertThat(foundBook.get().getId()).isEqualTo(id);
+    assertThat(foundBook.get().getAuthor()).isEqualTo(book.getAuthor());
+    assertThat(foundBook.get().getTitle()).isEqualTo(book.getTitle());
+    assertThat(foundBook.get().getIsbn()).isEqualTo(book.getIsbn());
+  }
+
+  @Test
+  @DisplayName("Deve retornar vazio quando buscar um livro por Id")
+  public void bookNotFoundById() {
+    Long id = 1L;
+
+    Mockito.when(repository.findById(id)).thenReturn(Optional.empty());
+
+    Optional<Book> book= service.getById(id);
+
+    assertThat(book.isPresent()).isFalse();
+  }
+
+  @Test
+  @DisplayName("Deve deletar um livro")
+  public void bookDeleteTeste(){
+
+    Book book = Book.builder().id(1L).build();
+
+   org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> service.delete(book));
+
+    Mockito.verify(repository, Mockito.times(1)).delete(book);
+
+  }
+
+  @Test
+  @DisplayName("Não ocorrer erro ao tentar deletar um livro")
+  public void deleteInvalidBookTest(){
+    Book book = new Book();
+
+    org.junit.jupiter.api.Assertions.assertThrows(
+        IllegalArgumentException.class,() -> service.delete(book));
+
+    Mockito.verify(repository, Mockito.never()).delete(book);
   }
 }
