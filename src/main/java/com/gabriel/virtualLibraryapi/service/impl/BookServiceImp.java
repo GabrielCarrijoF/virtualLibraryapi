@@ -3,11 +3,12 @@ package com.gabriel.virtualLibraryapi.service.impl;
 import com.gabriel.virtualLibraryapi.api.exeption.BusinessExecption;
 import com.gabriel.virtualLibraryapi.model.entity.Book;
 import com.gabriel.virtualLibraryapi.model.repository.BookRepository;
-import com.gabriel.virtualLibraryapi.service.BookService;
+import java.awt.print.Pageable;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 @Service
-public class BookServiceImp implements BookService {
+public class BookServiceImp implements com.gabriel.virtualLibraryapi.service.BookService {
 
   private BookRepository repository;
 
@@ -43,5 +44,10 @@ public class BookServiceImp implements BookService {
       throw new IllegalArgumentException("Book id cant be null");
     }
     return this.repository.save(book);
+  }
+
+  @Override
+  public Page<Book> find(final Book any, final Pageable any1) {
+    return null;
   }
 }
